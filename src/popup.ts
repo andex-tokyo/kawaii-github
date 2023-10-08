@@ -13,27 +13,6 @@ function loadSettings() {
     });
 }
 
-// 現在のタブでスタイルを適用する関数
-function applyStylesOnCurrentTab(settings: Record<string, string>) {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        const activeTab = tabs[0];
-        if (!activeTab || typeof activeTab.id === "undefined") return;
-
-        const css = Object.keys(settings).map(level => 
-            `.ContributionCalendar-day[data-level="${level.replace('level', '')}"] { fill: ${settings[level]};background-color:${settings[level]} }`
-        ).join('\n');
-
-        chrome.tabs.executeScript(activeTab.id, {
-            code: `
-                const styleSheet = document.createElement("style");
-                styleSheet.type = "text/css";
-                styleSheet.innerText = \`${css}\`;
-                document.head.appendChild(styleSheet);
-            `
-        });
-    });
-}
-
 // ページの読み込みが完了したら設定をロードする
 window.onload = loadSettings;
 
@@ -49,7 +28,6 @@ document.getElementById('save')?.addEventListener('click', function() {
 
     console.log("Saving settings:", settings);
     chrome.storage.local.set({ settings: settings }, () => {
-        applyStylesOnCurrentTab(settings); // 保存後に現在のタブでスタイルを適用
         window.close();  // ポップアップを閉じる
     });
 });
