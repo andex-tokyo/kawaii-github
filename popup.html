@@ -1,11 +1,31 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
 <html>
 <head>
-  <title>デザイン変更</title>
+    <title>設定</title>
 </head>
 <body>
-  <button id="toggleStyle">デザイン変更</button>
-  <script src="dist/popup.js"></script>
+    <h2>Contribution Color Settings</h2>
+    <div>
+        <label for="level0">Level 0 Color: </label>
+        <input type="color" id="level0">
+    </div>
+    <div>
+        <label for="level1">Level 1 Color: </label>
+        <input type="color" id="level1">
+    </div>
+    <div>
+        <label for="level2">Level 2 Color: </label>
+        <input type="color" id="level2">
+    </div>
+    <div>
+        <label for="level3">Level 3 Color: </label>
+        <input type="color" id="level3">
+    </div>
+    <div>
+        <label for="level4">Level 4 Color: </label>
+        <input type="color" id="level4">
+    </div>
+    <button id="save">Save</button>
+    <script src="./dist/popup.js"></script>
 </body>
 </html>
