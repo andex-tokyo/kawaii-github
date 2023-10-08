@@ -33,7 +33,7 @@ function handleImageUpload(inputElement: HTMLInputElement, previewElement: HTMLI
     const img = new Image();
     img.onload = function() {
         if (img.width !== img.height) {
-            alert("画像は正方形でなければなりません。");
+            alert("正方形の画像のみ対応しております。\nアップロードされた画像のサイズは"+img.width+"x"+img.height+"px です。");
             return;
         }
         
