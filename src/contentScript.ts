@@ -1,9 +1,13 @@
 // 現在のページにスタイルを適用する関数
-function applyStyles(settings: Record<string, string>) {
+function applyStyles(settings: Record<string, string | null>) {
     let css = '';
     for (let i = 0; i <= 4; i++) {
         const color = settings[`level${i}`];
-        if (color) {
+        const imageData = settings[`level${i}_img`];
+        
+        if (imageData) {
+            css += `.ContributionCalendar-day[data-level="${i}"] { background-image: url(${imageData}); background-size: cover; fill: transparent; background-color:transparent; }\n`;
+        } else if (color) {
             css += `.ContributionCalendar-day[data-level="${i}"] { fill: ${color}; background-color:${color}; }\n`;
         }
     }

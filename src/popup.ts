@@ -1,48 +1,113 @@
-// 保存された設定を読み込んで、入力フィールドに設定する関数
+function getElementById<T extends HTMLElement>(id: string): T | null {
+    return document.getElementById(id) as T | null;
+}
+
 function loadSettings() {
-    chrome.storage.local.get('settings', function(data) {
-        if (data.settings) {
-            for (let i = 0; i <= 4; i++) {
-                const colorInput = document.getElementById(`level${i}`) as HTMLInputElement;
-                const color = data.settings[`level${i}`];
-                if (colorInput && color) {
-                    colorInput.value = color;
-                }
-            }
+    chrome.storage.local.get('settings', (data) => {
+        if (!data.settings) return;
+
+        for (let i = 0; i <= 4; i++) {
+            const colorValue = data.settings[`level${i}`];
+            const imageData = data.settings[`level${i}_img`];
+
+            setElementValue(`level${i}`, colorValue);
+            setImageSource(`level${i}_img_preview`, imageData);
         }
     });
 }
 
-// ページの読み込みが完了したら設定をロードする
-window.onload = loadSettings;
+function setElementValue(id: string, value: string | null) {
+    const elem = getElementById<HTMLInputElement>(id);
+    if (elem && value) elem.value = value;
+}
 
-document.getElementById('save')?.addEventListener('click', function() {
-    let settings: Record<string, string> = {};
+function setImageSource(id: string, src: string | null) {
+    const imgElem = getElementById<HTMLImageElement>(id);
+    if (imgElem) imgElem.src = src || '';
+}
+
+function handleImageUpload(inputElement: HTMLInputElement, previewElement: HTMLImageElement) {
+    const file = inputElement.files?.[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = function() {
+        if (img.width !== img.height) {
+            alert("正方形の画像のみ対応しております。\nアップロードされた画像のサイズは"+img.width+"x"+img.height+"px です。");
+            return;
+        }
+        
+        const ctx = createCanvasContext(30, 30);
+        if (!ctx) return;
+
+        ctx.drawImage(img, 0, 0, 30, 30);
+        previewElement.src = ctx.canvas.toDataURL();
+    };
+    img.src = URL.createObjectURL(file);
+}
+
+function createCanvasContext(width: number, height: number): CanvasRenderingContext2D | null {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    return canvas.getContext("2d");
+}
+
+function initializeEventListeners() {
+    for (let i = 0; i <= 4; i++) {
+        getElementById<HTMLInputElement>(`level${i}_img`)?.addEventListener('change', function(evt) {
+            const target = evt.target as HTMLInputElement;
+            const previewElem = getElementById<HTMLImageElement>(`level${i}_img_preview`);
+            if (previewElem) handleImageUpload(target, previewElem);
+        });
+
+        getElementById(`delete_level${i}_img`)?.addEventListener('click', () => {
+            setImageSource(`level${i}_img_preview`, null);
+        });
+    }
+
+    getElementById('save')?.addEventListener('click', saveSettings);
+    getElementById('set_default')?.addEventListener('click', setDefaultSettings);
+}
+
+function saveSettings() {
+    const settings: Record<string, string | null> = {};
 
     for (let i = 0; i <= 4; i++) {
-        const colorInput = document.getElementById(`level${i}`) as HTMLInputElement;
-        if (colorInput) {
-            settings[`level${i}`] = colorInput.value;
+        settings[`level${i}`] = getElementById<HTMLInputElement>(`level${i}`)?.value || '';
+
+        // 画像のURLをチェック
+        const imgURL = getElementById<HTMLImageElement>(`level${i}_img_preview`)?.src || '';
+        if (imgURL && imgURL.includes('data:image/')) {
+            settings[`level${i}_img`] = imgURL;
         }
     }
 
-    console.log("Saving settings:", settings);
-    chrome.storage.local.set({ settings: settings }, () => {
-        window.close();  // ポップアップを閉じる
+    chrome.storage.local.set({ settings }, () => {
+        window.close();
     });
-});
+}
 
-document.getElementById('set_default')?.addEventListener('click', function() {
-    let settings: Record<string, string> = {};
+function setDefaultSettings() {
+    const defaultColors = {
+        level0: "#161B22",
+        level1: "#0e4429",
+        level2: "#006d32",
+        level3: "#26a641",
+        level4: "#39d353"
+    };
+    
+    // 画像を削除する処理
+    for (let i = 0; i <= 4; i++) {
+        setImageSource(`level${i}_img_preview`, null);
+    }
 
-    settings[`level0`] = "#161B22";
-    settings[`level1`] = "#0e4429";
-    settings[`level2`] = "#006d32";
-    settings[`level3`] = "#26a641";
-    settings[`level4`] = "#39d353";
-
-    console.log("Saving settings:", settings);
-    chrome.storage.local.set({ settings: settings }, () => {
-        window.close();  // ポップアップを閉じる
+    chrome.storage.local.set({ settings: defaultColors }, () => {
+        window.close();
     });
-});
+}
+
+window.onload = () => {
+    loadSettings();
+    initializeEventListeners();
+};
