@@ -15,17 +15,22 @@ function loadSettings() {
 
 // 現在のタブでスタイルを適用する関数
 function applyStylesOnCurrentTab(settings: Record<string, string>) {
-    const css = Object.keys(settings).map(level => 
-        `.ContributionCalendar-day[data-level="${level.replace('level', '')}"] { fill: ${settings[level]}; }`
-    ).join('\n');
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        const activeTab = tabs[0];
+        if (!activeTab || typeof activeTab.id === "undefined") return;
 
-    chrome.tabs.executeScript({
-        code: `
-            const styleSheet = document.createElement("style");
-            styleSheet.type = "text/css";
-            styleSheet.innerText = \`${css}\`;
-            document.head.appendChild(styleSheet);
-        `
+        const css = Object.keys(settings).map(level => 
+            `.ContributionCalendar-day[data-level="${level.replace('level', '')}"] { fill: ${settings[level]};background-color:${settings[level]} }`
+        ).join('\n');
+
+        chrome.tabs.executeScript(activeTab.id, {
+            code: `
+                const styleSheet = document.createElement("style");
+                styleSheet.type = "text/css";
+                styleSheet.innerText = \`${css}\`;
+                document.head.appendChild(styleSheet);
+            `
+        });
     });
 }
 

@@ -3,7 +3,7 @@
     "name": "GitHub Contribution Color Changer",
     "version": "1.0",
     "description": "Change the color of the GitHub contribution graph.",
-    "permissions": ["storage", "scripting"],
+    "permissions": ["storage", "tabs", "activeTab", "https://github.com/*"],
     "background": {
       "service_worker": "./dist/background.js"
     },

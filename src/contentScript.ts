@@ -6,7 +6,7 @@ chrome.storage.local.get('settings', function(data) {
         for (let i = 0; i <= 4; i++) {
             const color = data.settings[`level${i}`];
             if (color) {
-                css += `.ContributionCalendar-day[data-level="${i}"] { fill: ${color}; }\n`;
+                css += `.ContributionCalendar-day[data-level="${i}"] { fill: ${color}; background-color:${color}}\n`;
             }
         }
 
