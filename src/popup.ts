@@ -55,17 +55,25 @@ document.getElementById('save')?.addEventListener('click', function() {
 });
 
 document.getElementById('set_default')?.addEventListener('click', function() {
-    let settings: Record<string, string> = {};
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0].id) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: "getDefaultColor" }, (response) => {
+                console.log("Detected background color:", response);
 
-    settings[`level0`] = "#161B22";
-    settings[`level1`] = "#0e4429";
-    settings[`level2`] = "#006d32";
-    settings[`level3`] = "#26a641";
-    settings[`level4`] = "#39d353";
+                let settings: Record<string, string> = {};
 
-    console.log("Saving settings:", settings);
-    chrome.storage.local.set({ settings: settings }, () => {
-        applyStylesOnCurrentTab(settings); // 保存後に現在のタブでスタイルを適用
-        window.close();  // ポップアップを閉じる
+                settings[`level0`] = response.colorL0;
+                settings[`level1`] = response.colorL1;
+                settings[`level2`] = response.colorL2;
+                settings[`level3`] = response.colorL3;
+                settings[`level4`] = response.colorL4;
+                
+                console.log("Saving settings:", settings);
+                chrome.storage.local.set({ settings: settings }, () => {
+                    applyStylesOnCurrentTab(settings); // 保存後に現在のタブでスタイルを適用
+                    window.close();  // ポップアップを閉じる
+                });
+            });
+        }
     });
 });
