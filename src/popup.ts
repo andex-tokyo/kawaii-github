@@ -124,7 +124,6 @@ function setDefaultSettings() {
 
                 console.log("Saving settings:", settings);
                 chrome.storage.local.set({ settings: settings }, () => {
-                    window.close();  // ポップアップを閉じる
                 });
             });
         }
