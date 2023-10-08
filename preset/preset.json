@@ -1,0 +1,19 @@
+[
+    {
+      "name": "Preset1",
+      "level0": "#ff0000",
+      "level1": "#00ff00",
+      "level2": "#0000ff",
+      "level3": "#ffff00",
+      "level4": "#ff00ff"
+    },
+    {
+      "name": "Preset2",
+      "level0": "#FFFFFF",
+      "level1": "#EEEEEE",
+      "level2": "#DDDDDD",
+      "level3": "#CCCCCC",
+      "level4_img": "./preset/img/moe.png"
+    }
+  ]
+  

@@ -9,62 +9,68 @@
     <h2>Kawaii-Kusa</h2>
 
     <!-- 色の設定 -->
-    <div class="color_panel">
-        <label>Less</label>
-        <div>
-            <input type="color" id="level0">
-        </div>
-        <div>
-            <input type="color" id="level1">
-        </div>
-        <div>
-            <input type="color" id="level2">
-        </div>
-        <div>
-            <input type="color" id="level3">
-        </div>
-        <div> 
-            <input type="color" id="level4">
-        </div>
-        <label>More</label>
+<!-- 色の設定 -->
+<div class="color_panel">
+    <label>Less</label>
+
+    <!-- Level 0 -->
+    <div class="setting_container" id="level0_container">
+        <div class="color_preview" id="level0_preview"></div>
+        <input type="color" class="color_input" id="level0" style="display:none;">
+        <input type="file" class="image_input" id="level0_img" style="display:none;">
     </div>
 
-    <!-- 画像の設定 -->
-    <div>
-        <label for="level0_img">Level 0 Image: </label>
-        <input type="file" id="level0_img">
-        <img id="level0_img_preview" width="30" height="30">
-        <button id="delete_level0_img">Delete Image</button>
+    <!-- Level 1 -->
+    <div class="setting_container" id="level1_container">
+        <div class="color_preview" id="level1_preview"></div>
+        <input type="color" class="color_input" id="level1" style="display:none;">
+        <input type="file" class="image_input" id="level1_img" style="display:none;">
     </div>
-    <div>
-        <label for="level1_img">Level 1 Image: </label>
-        <input type="file" id="level1_img">
-        <img id="level1_img_preview" width="30" height="30">
-        <button id="delete_level1_img">Delete Image</button>
+
+    <!-- Level 2 -->
+    <div class="setting_container" id="level2_container">
+        <div class="color_preview" id="level2_preview"></div>
+        <input type="color" class="color_input" id="level2" style="display:none;">
+        <input type="file" class="image_input" id="level2_img" style="display:none;">
     </div>
-    <div>
-        <label for="level2_img">Level 2 Image: </label>
-        <input type="file" id="level2_img">
-        <img id="level2_img_preview" width="30" height="30">
-        <button id="delete_level2_img">Delete Image</button>
+
+    <!-- Level 3 -->
+    <div class="setting_container" id="level3_container">
+        <div class="color_preview" id="level3_preview"></div>
+        <input type="color" class="color_input" id="level3" style="display:none;">
+        <input type="file" class="image_input" id="level3_img" style="display:none;">
     </div>
-    <div>
-        <label for="level3_img">Level 3 Image: </label>
-        <input type="file" id="level3_img">
-        <img id="level3_img_preview" width="30" height="30">
-        <button id="delete_level3_img">Delete Image</button>
+
+    <!-- Level 4 -->
+    <div class="setting_container" id="level4_container">
+        <div class="color_preview" id="level4_preview"></div>
+        <input type="color" class="color_input" id="level4" style="display:none;">
+        <input type="file" class="image_input" id="level4_img" style="display:none;">
     </div>
-    <div>
-        <label for="level4_img">Level 4 Image: </label>
-        <input type="file" id="level4_img">
-        <img id="level4_img_preview" width="30" height="30">
-        <button id="delete_level4_img">Delete Image</button>
-    </div>
+
+    <label>More</label>
+</div>
+<select id="presetDropdown">
+    <option value="">プリセットを選択</option>
+    <!-- ここにプリセットのオプションが動的に追加される -->
+</select>
+
 
     <div class="bottom_button">
-        <button id="save">Save</button>
         <button id="set_default">Default</button>
+        <button id="save">Save</button>
     </div>
+
+    <div id="customDropdown" style="display:none; position:absolute; background-color:#fff; border:1px solid #ccc; z-index:100;">
+        <div id="colorChoice">色を選択</div>
+        <div id="imageChoice">画像をアップロード</div>
+    </div>
+    <input type="hidden" id="level0_img_hidden">
+    <input type="hidden" id="level1_img_hidden">
+    <input type="hidden" id="level2_img_hidden">
+    <input type="hidden" id="level3_img_hidden">
+    <input type="hidden" id="level4_img_hidden">
+    
     <script src="./dist/popup.js"></script>
 </body>
 </html>

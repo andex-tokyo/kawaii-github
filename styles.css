@@ -44,3 +44,18 @@ body {
     background-color: #65c575;
     border-radius: 10px;
 }
+.color_preview {
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+    background-size: cover;
+}
+#customDropdown div {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#customDropdown div:hover {
+    background-color: #f0f0f0;
+}

@@ -53,7 +53,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             colorL3: bgColorValueL3,
             colorL4: bgColorValueL4,
         });
-        return true;
+        return true;  // 非同期応答を示すためにtrueを返します
     }
+    return false;  // このリスナーが対応しないメッセージの場合
 });
 
