@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "サイトデザイン変更拡張",
+    "version": "1.0",
+    "permissions": ["activeTab", "declarativeContent","scripting"],
+    "host_permissions": ["<all_urls>"],
+    "background": {
+        "service_worker": "dist/background.js"
+      },
+    "content_scripts": [
+      {
+        "matches": ["*://github.com/*"],
+        "css": ["styles.css"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  
