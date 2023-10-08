@@ -43,7 +43,6 @@ document.getElementById('set_default')?.addEventListener('click', function() {
 
     console.log("Saving settings:", settings);
     chrome.storage.local.set({ settings: settings }, () => {
-        applyStylesOnCurrentTab(settings); // 保存後に現在のタブでスタイルを適用
         window.close();  // ポップアップを閉じる
     });
 });
