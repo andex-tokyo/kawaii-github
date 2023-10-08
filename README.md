@@ -6,10 +6,12 @@ To install dependencies:
 bun install
 ```
 
-To run:
+To run build:
 
 ```bash
-bun run index.ts
+bun run build
 ```
+
+and put it to chrome!
 
 This project was created using `bun init` in bun v1.0.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
