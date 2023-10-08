@@ -3,16 +3,33 @@ function getElementById<T extends HTMLElement>(id: string): T | null {
 }
 
 function loadSettings() {
-    chrome.storage.local.get('settings', (data) => {
-        if (!data.settings) return;
+    chrome.storage.local.get('settings', (result) => {
+        let settings = result.settings;
 
-        for (let i = 0; i <= 4; i++) {
-            const colorValue = data.settings[`level${i}`];
-            const imageData = data.settings[`level${i}_img`];
-
-            setElementValue(`level${i}`, colorValue);
-            setImageSource(`level${i}_img_preview`, imageData);
+        if (!settings) {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]?.id) {
+                    chrome.tabs.sendMessage(tabs[0].id, { action: "getDefaultColor" }, (response) => {
+                        settings = {
+                            level0: response.colorL0,
+                            level1: response.colorL1,
+                            level2: response.colorL2,
+                            level3: response.colorL3,
+                            level4: response.colorL4
+                        };
+                    });
+                }
+            });
         }
+
+        setTimeout(() => {
+            for (let i = 0; i <= 4; i++) {
+                const colorValue = settings[`level${i}`];
+                const imageData = settings[`level${i}_img`];
+                setElementValue(`level${i}`, colorValue);
+                setImageSource(`level${i}_img_preview`, imageData);
+            }
+        }, 50); // 色と画像を設定する前に少し待つ
     });
 }
 
@@ -94,12 +111,13 @@ function setDefaultSettings() {
                 console.log("Detected background color:", response);
 
                 let settings: Record<string, string> = {};
-                settings[`level0`] = response.colorL0;
-                settings[`level1`] = response.colorL1;
-                settings[`level2`] = response.colorL2;
-                settings[`level3`] = response.colorL3;
-                settings[`level4`] = response.colorL4;
-
+                settings = {
+                    level0: response.colorL0,
+                    level1: response.colorL1,
+                    level2: response.colorL2,
+                    level3: response.colorL3,
+                    level4: response.colorL4
+                };
                 for (let i = 0; i <= 4; i++) {
                     setImageSource(`level${i}_img_preview`, null);
                 }
