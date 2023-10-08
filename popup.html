@@ -5,6 +5,8 @@
 </head>
 <body>
     <h2>Contribution Color Settings</h2>
+
+    <!-- 色の設定 -->
     <div>
         <label for="level0">Level 0 Color: </label>
         <input type="color" id="level0" value="#161b22">
@@ -25,6 +27,39 @@
         <label for="level4">Level 4 Color: </label>
         <input type="color" id="level4" value="#39d353">
     </div>
+
+    <!-- 画像の設定 -->
+    <div>
+        <label for="level0_img">Level 0 Image: </label>
+        <input type="file" id="level0_img">
+        <img id="level0_img_preview" width="30" height="30">
+        <button id="delete_level0_img">Delete Image</button>
+    </div>
+    <div>
+        <label for="level1_img">Level 1 Image: </label>
+        <input type="file" id="level1_img">
+        <img id="level1_img_preview" width="30" height="30">
+        <button id="delete_level1_img">Delete Image</button>
+    </div>
+    <div>
+        <label for="level2_img">Level 2 Image: </label>
+        <input type="file" id="level2_img">
+        <img id="level2_img_preview" width="30" height="30">
+        <button id="delete_level2_img">Delete Image</button>
+    </div>
+    <div>
+        <label for="level3_img">Level 3 Image: </label>
+        <input type="file" id="level3_img">
+        <img id="level3_img_preview" width="30" height="30">
+        <button id="delete_level3_img">Delete Image</button>
+    </div>
+    <div>
+        <label for="level4_img">Level 4 Image: </label>
+        <input type="file" id="level4_img">
+        <img id="level4_img_preview" width="30" height="30">
+        <button id="delete_level4_img">Delete Image</button>
+    </div>
+
     <button id="save">Save</button>
     <button id="set_default">Default</button>
     <script src="./dist/popup.js"></script>
