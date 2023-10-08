@@ -299,7 +299,8 @@ function saveSettings() {
     }
 
     chrome.storage.local.set({ settings }, () => {
-        loadSettings(); // 設定を保存した後にロードしてUIを更新
+        loadSettings();
+        window.close();
     });
 }
 
