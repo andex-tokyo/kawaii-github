@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "GitHub Contribution Color Changer",
+    "name": "Kawaii-Kusa",
     "version": "1.0",
     "description": "Change the color of the GitHub contribution graph.",
     "permissions": ["storage", "tabs", "activeTab","scripting"],
@@ -19,6 +19,11 @@
     ],
     "action": {
       "default_popup": "popup.html"
+    },
+    "icons": {
+        "16": "./img/icon16.png",
+        "48": "./img/icon48.png",
+        "128": "./img/icon.png"
     }
   }
   

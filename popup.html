@@ -3,30 +3,30 @@
 <html>
 <head>
     <title>設定</title>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <h2>Contribution Color Settings</h2>
+    <h2>Kawaii-Kusa</h2>
 
     <!-- 色の設定 -->
-    <div>
-        <label for="level0">Level 0 Color: </label>
-        <input type="color" id="level0">
-    </div>
-    <div>
-        <label for="level1">Level 1 Color: </label>
-        <input type="color" id="level1">
-    </div>
-    <div>
-        <label for="level2">Level 2 Color: </label>
-        <input type="color" id="level2">
-    </div>
-    <div>
-        <label for="level3">Level 3 Color: </label>
-        <input type="color" id="level3">
-    </div>
-    <div>
-        <label for="level4">Level 4 Color: </label>
-        <input type="color" id="level4">
+    <div class="color_panel">
+        <label>Less</label>
+        <div>
+            <input type="color" id="level0">
+        </div>
+        <div>
+            <input type="color" id="level1">
+        </div>
+        <div>
+            <input type="color" id="level2">
+        </div>
+        <div>
+            <input type="color" id="level3">
+        </div>
+        <div> 
+            <input type="color" id="level4">
+        </div>
+        <label>More</label>
     </div>
 
     <!-- 画像の設定 -->
@@ -61,8 +61,10 @@
         <button id="delete_level4_img">Delete Image</button>
     </div>
 
-    <button id="save">Save</button>
-    <button id="set_default">Default</button>
+    <div class="bottom_button">
+        <button id="save">Save</button>
+        <button id="set_default">Default</button>
+    </div>
     <script src="./dist/popup.js"></script>
 </body>
 </html>
