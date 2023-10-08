@@ -33,10 +33,10 @@ function handleImageUpload(inputElement: HTMLInputElement, previewElement: HTMLI
     const img = new Image();
     img.onload = function() {
         if (img.width !== img.height) {
-            alert("正方形の画像のみ対応しております。\nアップロードされた画像のサイズは"+img.width+"x"+img.height+"px です。");
+            alert("正方形の画像のみ対応しております。\nアップロードされた画像のサイズは" + img.width + "x" + img.height + "px です。");
             return;
         }
-        
+
         const ctx = createCanvasContext(30, 30);
         if (!ctx) return;
 
@@ -76,7 +76,6 @@ function saveSettings() {
     for (let i = 0; i <= 4; i++) {
         settings[`level${i}`] = getElementById<HTMLInputElement>(`level${i}`)?.value || '';
 
-        // 画像のURLをチェック
         const imgURL = getElementById<HTMLImageElement>(`level${i}_img_preview`)?.src || '';
         if (imgURL && imgURL.includes('data:image/')) {
             settings[`level${i}_img`] = imgURL;
@@ -89,21 +88,28 @@ function saveSettings() {
 }
 
 function setDefaultSettings() {
-    const defaultColors = {
-        level0: "#161B22",
-        level1: "#0e4429",
-        level2: "#006d32",
-        level3: "#26a641",
-        level4: "#39d353"
-    };
-    
-    // 画像を削除する処理
-    for (let i = 0; i <= 4; i++) {
-        setImageSource(`level${i}_img_preview`, null);
-    }
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0].id) {
+            chrome.tabs.sendMessage(tabs[0].id, { action: "getDefaultColor" }, (response) => {
+                console.log("Detected background color:", response);
 
-    chrome.storage.local.set({ settings: defaultColors }, () => {
-        window.close();
+                let settings: Record<string, string> = {};
+                settings[`level0`] = response.colorL0;
+                settings[`level1`] = response.colorL1;
+                settings[`level2`] = response.colorL2;
+                settings[`level3`] = response.colorL3;
+                settings[`level4`] = response.colorL4;
+
+                for (let i = 0; i <= 4; i++) {
+                    setImageSource(`level${i}_img_preview`, null);
+                }
+
+                console.log("Saving settings:", settings);
+                chrome.storage.local.set({ settings: settings }, () => {
+                    window.close();  // ポップアップを閉じる
+                });
+            });
+        }
     });
 }
 
