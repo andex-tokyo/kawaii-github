@@ -5,7 +5,7 @@
       "level1": "#F490B3",
       "level2": "#D43397",
       "level3": "#843BF6",
-      "level4": "./preset/imp/heart.png"
+      "level4_img": "./preset/img/heart.png"
     },
     {
       "name": "Preset2",
