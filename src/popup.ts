@@ -350,7 +350,7 @@ function setDefaultSettings() {
 }
 
 function isGithubProfilePage(url: string) {
-    const regex = /https:\/\/github\.com\/[a-zA-Z0-9_-]+$/;
+    const regex = /^https:\/\/github\.com\/[a-zA-Z0-9_-]+(?:\?.+|#.+)?$/;
     return regex.test(url);
 }
 
