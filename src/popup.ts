@@ -316,19 +316,44 @@ function applyFirstTimeUI() {
         makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4)';
     };
     makeItKawaiiBtn.onclick = () => {
-        // タブをリロードする
+        // 最初にタブをリロード
         chrome.tabs.reload(() => {
-            // タブのリロード後に以下の操作を行う
             fetch('./preset/preset.json')
                 .then(response => response.json())
                 .then(presets => {
                     const preset1 = presets[0];
-                    updateUI(preset1);
-                    saveSettings();
-                    overlay.remove();
+    
+                    // すべての画像の処理を非同期で待つ
+                    const promises = [];
+                    for (let i = 0; i <= 4; i++) {
+                        const levelKey = `level${i}`;
+                        if (preset1[`${levelKey}_img`]) {
+                            promises.push(new Promise<void>(resolve => {
+                                processImage(preset1[`${levelKey}_img`], 30, 30, (base64) => {
+                                    const previewElem = getElementById<HTMLDivElement>(`${levelKey}_preview`);
+                                    if (previewElem) {
+                                        previewElem.style.backgroundImage = `url(${base64})`;
+                                    }
+                                    const hiddenImageInputElement = getElementById<HTMLInputElement>(`${levelKey}_img_hidden`);
+                                    if (hiddenImageInputElement) {
+                                        hiddenImageInputElement.value = base64;
+                                    }
+                                    resolve();
+                                });
+                            }));
+                        }
+                    }
+    
+                    // すべての画像の処理が完了したらUIを更新して設定を保存
+                    Promise.all(promises).then(() => {
+                        updateUI(preset1);
+                        saveSettings();
+                        overlay.remove();
+                    });
                 });
         });
     };
+    
 
     const skipBtn = document.createElement('button');
     skipBtn.id = 'skipBtn';
