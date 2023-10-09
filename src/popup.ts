@@ -304,66 +304,45 @@ function saveSettings() {
     });
 }
 
+
 function applyFirstTimeUI() {
     const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-    overlay.style.zIndex = '9999';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
+    overlay.classList.add('overlay');
+
     const makeItKawaiiBtn = document.createElement('button');
+    makeItKawaiiBtn.id = 'makeItKawaiiBtn';
     makeItKawaiiBtn.innerText = 'Make it Kawaii';
-    makeItKawaiiBtn.style.fontSize = '28px';
-    makeItKawaiiBtn.style.marginBottom = '15px';
-    makeItKawaiiBtn.style.border = 'none';
-    makeItKawaiiBtn.style.borderRadius = '25px';
-    makeItKawaiiBtn.style.padding = '15px 35px';
-    makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4)'; // ピンクのグラデーション
-    makeItKawaiiBtn.style.color = 'white';
-    makeItKawaiiBtn.style.textShadow = '2px 2px 4px #000000';  // テキストに黒の影を追加
-    makeItKawaiiBtn.style.boxShadow = '0px 5px 20px rgba(0, 0, 0, 0.4)';
-    makeItKawaiiBtn.style.cursor = 'pointer';
-    makeItKawaiiBtn.style.transition = 'transform 0.2s, background 0.3s';
     makeItKawaiiBtn.onmouseover = () => {
         makeItKawaiiBtn.style.transform = 'scale(1.1)';
-        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF4500, #FF6347, #FF4500)'; // オーバー時に色をオレンジに変更
+        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF4500, #FF6347, #FF4500)';
     };
     makeItKawaiiBtn.onmouseout = () => {
         makeItKawaiiBtn.style.transform = 'scale(1)';
-        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4)'; // マウスが外れた時にピンクに戻す
+        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4)';
     };
     makeItKawaiiBtn.onclick = () => {
-        // 以前の処理はそのまま
-        fetch('./preset/preset.json')
-            .then(response => response.json())
-            .then(presets => {
-                const preset1 = presets[0];
-                updateUI(preset1);
-                saveSettings();
-                overlay.remove();
-            });
+        // タブをリロードする
+        chrome.tabs.reload(() => {
+            // タブのリロード後に以下の操作を行う
+            fetch('./preset/preset.json')
+                .then(response => response.json())
+                .then(presets => {
+                    const preset1 = presets[0];
+                    updateUI(preset1);
+                    saveSettings();
+                    overlay.remove();
+                });
+        });
     };
 
     const skipBtn = document.createElement('button');
+    skipBtn.id = 'skipBtn';
     skipBtn.innerText = 'Skip';
-    skipBtn.style.opacity = '0.7';
-    skipBtn.style.border = 'none';
-    skipBtn.style.backgroundColor = 'transparent';
-    skipBtn.style.cursor = 'pointer';
-    skipBtn.style.fontSize = '16px'; // テキストのサイズを小さく
-    skipBtn.style.color = '#b0b0b0'; // 薄いグレーのテキストカラー
-    skipBtn.style.borderBottom = '1px dashed #b0b0b0'; // 薄いグレーの点線の下線
-    skipBtn.style.marginTop = '10px';
-    skipBtn.onmouseover = () => skipBtn.style.opacity = '1'; // マウスオーバー時の明るさを増す
-    skipBtn.onmouseout = () => skipBtn.style.opacity = '0.7'; // マウスが外れた時に明るさを元に戻す
     skipBtn.onclick = () => {
-        overlay.remove();
+        // スキップボタンを押したときもタブをリロードする
+        chrome.tabs.reload(() => {
+            overlay.remove();
+        });
     }
 
     overlay.appendChild(makeItKawaiiBtn);
@@ -372,20 +351,53 @@ function applyFirstTimeUI() {
 }
 
 
+
 function setDefaultSettings() {
     fetchDefaultSettingsAndUpdateUI();
 }
 
+function isGithubProfilePage(url: string) {
+    const regex = /https:\/\/github\.com\/[a-zA-Z0-9_-]+$/;
+    return regex.test(url);
+}
+
+
 // Initialize
 window.onload = () => {
-    // 初回起動を確認
-    chrome.storage.local.get('isFirstTime', (result: { isFirstTime?: boolean }) => {
-        if (result.isFirstTime) {
-            applyFirstTimeUI();
-            chrome.storage.local.set({ isFirstTime: false }); // フラグをリセット
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const currentTab = tabs[0];
+        if (currentTab.url) {
+            // GitHubのプロフィールページでない場合
+            if (!isGithubProfilePage(currentTab.url)) {
+                document.body.style.margin = "0";
+                document.body.style.display = "flex";
+                document.body.style.justifyContent = "center";
+                document.body.style.alignItems = "center";
+                document.body.style.height = "100vh";
+                document.body.style.width = "300px";
+                document.body.style.fontSize = "18px";
+                document.body.style.fontFamily = "Arial, sans-serif";
+                document.body.style.textAlign = "center";
+                document.body.style.backgroundColor = "#f6f8fa";  // これはGitHubの背景色に近いものです。
+
+                document.body.innerHTML = `
+                    <div>
+                        Please Open at GitHub Profile Page <br>
+                    </div>
+                    `;
+                return;
+            }
         }
+    
+        // 初回起動を確認
+        chrome.storage.local.get('isFirstTime', (result) => {
+            if (result.isFirstTime) {
+                applyFirstTimeUI();
+                chrome.storage.local.set({ isFirstTime: false });
+            }
+        });
+        loadSettings();
+        loadPresets();
+        initializeEventListeners();
     });
-    loadSettings();
-    loadPresets();
-    initializeEventListeners();
 };
