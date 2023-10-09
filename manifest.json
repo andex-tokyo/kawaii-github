@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Kawaii-Kusa",
     "version": "1.0",
-    "description": "Change the color of the GitHub contribution graph.",
+    "description": "Make kusa kawaii!!!",
     "permissions": ["storage", "tabs", "activeTab","scripting"],
     "host_permissions": [
         "http://*/*",

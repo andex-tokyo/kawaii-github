@@ -307,14 +307,6 @@ function applyFirstTimeUI() {
     const makeItKawaiiBtn = document.createElement('button');
     makeItKawaiiBtn.id = 'makeItKawaiiBtn';
     makeItKawaiiBtn.innerText = 'Make it Kawaii';
-    makeItKawaiiBtn.onmouseover = () => {
-        makeItKawaiiBtn.style.transform = 'scale(1.1)';
-        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF4500, #FF6347, #FF4500)';
-    };
-    makeItKawaiiBtn.onmouseout = () => {
-        makeItKawaiiBtn.style.transform = 'scale(1)';
-        makeItKawaiiBtn.style.background = 'linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4)';
-    };
     makeItKawaiiBtn.onclick = () => {
         // 最初にタブをリロード
         chrome.tabs.reload(() => {

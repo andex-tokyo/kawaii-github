@@ -1,6 +1,6 @@
 [
     {
-      "name": "Heart",
+      "name": "heart",
       "level0": "#000000",
       "level1": "#F490B3",
       "level2": "#D43397",
@@ -8,12 +8,20 @@
       "level4_img": "./preset/img/heart.png"
     },
     {
-      "name": "Preset2",
+      "name": "cool",
       "level0": "#FFFFFF",
-      "level1": "#EEEEEE",
-      "level2": "#DDDDDD",
-      "level3": "#CCCCCC",
-      "level4_img": "./preset/img/moe.png"
+      "level1": "#57D4C5",
+      "level2": "#5E99D6",
+      "level3": "#93A4F5",
+      "level4_img": "./preset/img/cool.png"
+    },
+    {
+      "name": "party",
+      "level0": "#505050",
+      "level1": "#5F4FEA",
+      "level2": "#D64599",
+      "level3": "#F56F07",
+      "level4_img": "./preset/img/party.png"
     }
   ]
   

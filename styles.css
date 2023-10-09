@@ -39,7 +39,7 @@ body {
     font-size: 18px;
     border-radius: 20px;
     border: none;
-    width: 140px;
+    width: 280px;
     height: 40px;
     font-weight: bold;
     transition: 0.3s;
@@ -47,15 +47,13 @@ body {
 }
 
 #set_default {
-    line-height: 1;
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 18px;
+    text-align: center;
+    background-color: #b6e3a8;
     border: none;
-    padding: 10px 20px;
-    width: 140px;
-    background-color: #7d7d7d;
-    border-radius: 20px;
+    width: 30%;
+    color: #15541E;
+    margin: 0 35%;
+    margin-top: 10px;
 }
 .color_preview {
     width: 15px;
@@ -95,17 +93,10 @@ body {
     border: none;
     border-radius: 25px;
     padding: 15px 35px;
-    background: linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4);
     color: white;
-    text-shadow: 2px 2px 4px #000000;
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.4);
+    background-image: radial-gradient(circle at 100% 0%, rgba(184, 94, 243, 1) 15%, rgba(255, 161, 245, 1));
     cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
-}
-
-#makeItKawaiiBtn:hover {
-    transform: scale(1.1);
-    background: linear-gradient(45deg, #FF4500, #FF6347, #FF4500);
 }
 
 /* Skip ボタンのスタイル */
@@ -115,7 +106,7 @@ body {
     background-color: transparent;
     cursor: pointer;
     font-size: 16px;
-    color: #b0b0b0;
+    color: #000;
     border-bottom: 1px dashed #b0b0b0;
     margin-top: 10px;
     transition: opacity 0.2s;
@@ -128,8 +119,8 @@ body {
 #presetDropdown {
     background-color: #fff;
     padding: 5px 10px;
-    width: 96%;
-    margin: 0 5px;
+    width: 90%;
+    margin: 0 15px;
     margin-top: 20px;
     border-radius: 20px;
 }
