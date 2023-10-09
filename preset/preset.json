@@ -1,11 +1,11 @@
 [
     {
-      "name": "Preset1",
-      "level0": "#ff0000",
-      "level1": "#00ff00",
-      "level2": "#0000ff",
-      "level3": "#ffff00",
-      "level4": "#ff00ff"
+      "name": "Heart",
+      "level0": "#000000",
+      "level1": "#F490B3",
+      "level2": "#D43397",
+      "level3": "#843BF6",
+      "level4": "./preset/imp/heart.png"
     },
     {
       "name": "Preset2",

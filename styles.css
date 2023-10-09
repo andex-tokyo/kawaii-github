@@ -1,5 +1,10 @@
 body {
     background-color: #fff;
+    border: none;
+}
+
+:root {
+    border: none;
 }
 
 .color_panel {
@@ -10,7 +15,7 @@ body {
 }
 
 .color_panel label{
-    margin: 4px 0;
+    margin: 2px 0;
 }
   
 .color_panel input {
@@ -28,21 +33,29 @@ body {
 }
 
 #save {
-    color: #fff;
+    line-height: 1;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 20px;
     border: none;
-    padding: 10px 20px;
     width: 140px;
-    background-color: #f87777;
-    border-radius: 10px;
+    height: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    background-image: radial-gradient(circle at 100% 0%, rgba(94, 138, 243, 1) 15%, rgba(243, 61, 223, 1));
 }
 
 #set_default {
-    color: #fff;
+    line-height: 1;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 18px;
     border: none;
     padding: 10px 20px;
     width: 140px;
-    background-color: #65c575;
-    border-radius: 10px;
+    background-color: #7d7d7d;
+    border-radius: 20px;
 }
 .color_preview {
     width: 15px;
@@ -110,4 +123,13 @@ body {
 
 #skipBtn:hover {
     opacity: 1;
+}
+
+#presetDropdown {
+    background-color: #fff;
+    padding: 5px 10px;
+    width: 96%;
+    margin: 0 5px;
+    margin-top: 20px;
+    border-radius: 20px;
 }
