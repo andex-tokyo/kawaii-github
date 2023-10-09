@@ -388,6 +388,12 @@ window.onload = () => {
                 chrome.storage.local.set({ isFirstTime: false });
             }
         });
+        chrome.storage.local.get('isFirstTimeUpdate', (result) => {
+            if (result.isFirstTime) {
+                chrome.tabs.reload()
+                chrome.storage.local.set({ isFirstTimeUpdate: false });
+            }
+        });
         loadSettings();
         loadPresets();
         initializeEventListeners();
