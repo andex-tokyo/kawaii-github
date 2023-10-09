@@ -11,6 +11,7 @@ type Settings = {
     level3_img?: string;
     level4_img?: string;
 };
+
 type Preset = {
     name: string;
     level0?: string;
@@ -26,6 +27,7 @@ type Preset = {
 };
 
 let currentLevel = ''; 
+
 // Utility Functions
 function getElementById<T extends HTMLElement>(id: string): T | null {
     return document.getElementById(id) as T | null;
@@ -109,8 +111,6 @@ function handleImageUpload(inputElement: HTMLInputElement, previewElement: HTMLD
     });
 }
 
-
-
 function showOptions(level: string) {
     const previewElem = getElementById<HTMLDivElement>(`${level}_preview`);
     const dropdown = getElementById<HTMLDivElement>('customDropdown');
@@ -142,6 +142,7 @@ function showOptions(level: string) {
         currentLevel = level;
     }
 }
+
 function updateColorPreview(colorInput: HTMLInputElement, previewElement: HTMLDivElement | null) {
     if (previewElement) {
         previewElement.style.backgroundColor = colorInput.value;
@@ -177,7 +178,6 @@ function initializeEventListeners() {
 // Load and Save Functions
 function loadSettings() {
     chrome.storage.local.get('settings', (result) => {
-        console.log(result);
         const settings = result.settings;
 
         if (!settings) fetchDefaultSettingsAndUpdateUI();
@@ -187,11 +187,9 @@ function loadSettings() {
 
 function fetchDefaultSettingsAndUpdateUI() {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (!tabs[0]?.id) return console.log("No active tab found.");
-
+        if (!tabs[0]?.id) return;
         chrome.tabs.sendMessage(tabs[0].id, { action: "getDefaultColor" }, (response) => {
-            if (!response) return console.log("Error in receiving the response.");
-
+            if (!response) return;
             const settings: Settings = {
                 level0: response.colorL0,
                 level1: response.colorL1,
@@ -199,7 +197,6 @@ function fetchDefaultSettingsAndUpdateUI() {
                 level3: response.colorL3,
                 level4: response.colorL4,
             };
-            
 
             for (let i = 0; i <= 4; i++) {
                 const levelKey = `level${i}`;
@@ -236,7 +233,6 @@ function loadPresets() {
             
                     // nullチェックを追加
                     if (!targetElement) return;
-                    console.log(targetElement.value);
                     const selectedPreset = JSON.parse(targetElement.value);
                     
                     // 選択されたプリセットの色と画像を反映
@@ -253,7 +249,7 @@ function loadPresets() {
                             previewElem.style.backgroundImage = '';
                             previewElem.style.backgroundColor = '';
                         }
-        
+
                         // 画像があればそれを優先して反映、なければ色を反映
                         if (selectedPreset[`${levelKey}_img`]) {
                             processImage(selectedPreset[`${levelKey}_img`], 30, 30, (base64) => {
@@ -304,7 +300,6 @@ function saveSettings() {
     });
 }
 
-
 function applyFirstTimeUI() {
     const overlay = document.createElement('div');
     overlay.classList.add('overlay');
@@ -343,14 +338,12 @@ function applyFirstTimeUI() {
         chrome.tabs.reload(() => {
             overlay.remove();
         });
-    }
+    };
 
     overlay.appendChild(makeItKawaiiBtn);
     overlay.appendChild(skipBtn);
     document.body.appendChild(overlay);
 }
-
-
 
 function setDefaultSettings() {
     fetchDefaultSettingsAndUpdateUI();
@@ -360,7 +353,6 @@ function isGithubProfilePage(url: string) {
     const regex = /https:\/\/github\.com\/[a-zA-Z0-9_-]+$/;
     return regex.test(url);
 }
-
 
 // Initialize
 window.onload = () => {
@@ -378,13 +370,13 @@ window.onload = () => {
                 document.body.style.fontSize = "18px";
                 document.body.style.fontFamily = "Arial, sans-serif";
                 document.body.style.textAlign = "center";
-                document.body.style.backgroundColor = "#f6f8fa";  // これはGitHubの背景色に近いものです。
+                document.body.style.backgroundColor = "#f6f8fa";
 
                 document.body.innerHTML = `
                     <div>
                         Please Open at GitHub Profile Page <br>
                     </div>
-                    `;
+                `;
                 return;
             }
         }
