@@ -373,9 +373,12 @@ window.onload = () => {
                 document.body.style.backgroundColor = "#f6f8fa";
 
                 document.body.innerHTML = `
-                    <div>
-                        Please Open at GitHub Profile Page <br>
-                    </div>
+                <div style="text-align: center;">
+                    Please Open at GitHub Profile Page <br>
+                    <a href="https://github.com/" target="_blank">
+                    <i class="fab fa-github" style="color: #000000;font-size: 15px; margin-top: 15px"></i>
+                    </a>
+                </div>
                 `;
                 return;
             }
@@ -386,6 +389,12 @@ window.onload = () => {
             if (result.isFirstTime) {
                 applyFirstTimeUI();
                 chrome.storage.local.set({ isFirstTime: false });
+            }
+        });
+        chrome.storage.local.get('isFirstTimeUpdate', (result) => {
+            if (result.isFirstTime) {
+                chrome.tabs.reload()
+                chrome.storage.local.set({ isFirstTimeUpdate: false });
             }
         });
         loadSettings();
