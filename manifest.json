@@ -3,7 +3,7 @@
     "name": "Kawaii-Kusa",
     "version": "1.0",
     "description": "Make kusa kawaii!!!",
-    "permissions": ["storage", "tabs", "activeTab","scripting"],
+    "permissions": ["storage", "tabs", "activeTab"],
     "host_permissions": [
         "http://*/*",
         "https://*/*"
