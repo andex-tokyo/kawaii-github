@@ -323,7 +323,6 @@ function loadPresets() {
 function saveSettings() {
   // 既存の設定を読み込む
   chrome.storage.local.get("settings", (result) => {
-    console.log("Initial settings from storage: ", result.settings); // ポイント1
     const settings: Settings = result.settings || {};
 
     for (let i = 0; i <= 4; i++) {
@@ -333,8 +332,6 @@ function saveSettings() {
       const colorValue =
         getElementById<HTMLInputElement>(levelKey)?.value || "";
 
-      console.log(`Initial ${levelKey} color value: ${colorValue}`); // ポイント2
-
       // 画像の情報を取得
       const hiddenImageInputElement = getElementById<HTMLInputElement>(
         `${levelKey}_img_hidden`
@@ -342,18 +339,12 @@ function saveSettings() {
 
       // 画像が選択されているか確認
       if (hiddenImageInputElement && hiddenImageInputElement.value) {
-        console.log(
-          `New image value for ${levelKey}: ${hiddenImageInputElement.value}`
-        ); // ポイント2
         settings[`${levelKey}_img`] = hiddenImageInputElement.value;
       } else {
         settings[`${levelKey}_img`] = undefined;
         settings[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
       }
     }
-
-    console.log("Final settings to be saved: ", settings); // ポイント3
-
     // 新しい設定を保存する
     chrome.storage.local.set({ settings }, () => {
       loadSettings();
