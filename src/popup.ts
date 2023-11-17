@@ -26,6 +26,12 @@ type Preset = {
   level4_img?: string;
 };
 
+type PresetData = { 
+    name: string;
+    shareId: string;
+    [key: string]: string | undefined;
+};
+
 let currentLevel = "";
 
 // Utility Functions
@@ -204,6 +210,7 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
+  getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
 }
 
 // Load and Save Functions
@@ -477,3 +484,67 @@ window.onload = () => {
     initializeEventListeners();
   });
 };
+
+function clickPresetSaveButton() {
+  const shareIdInput = document.getElementById('presetShareId') as HTMLInputElement;
+  if (!shareIdInput.value) {
+    alert('Please enter a Share ID.');
+    return;
+  }
+  const myPreset: PresetData = {
+    name: 'My Preset',
+    shareId: shareIdInput.value,
+  };
+
+  for (let i = 0; i <= 4; i++) {
+    const levelKey = `level${i}`;
+
+    // 色の情報を取得
+    const colorValue =
+      getElementById<HTMLInputElement>(levelKey)?.value || "";
+
+    // 画像の情報を取得
+    const hiddenImageInputElement = getElementById<HTMLInputElement>(
+      `${levelKey}_img_hidden`
+    );
+
+    // 画像が選択されているか確認
+    if (hiddenImageInputElement && hiddenImageInputElement.value) {
+      myPreset[`${levelKey}_img`] = hiddenImageInputElement.value;
+    } else {
+      myPreset[`${levelKey}_img`] = undefined;
+      myPreset[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
+    }
+  }
+
+  savePreset(myPreset).then(() => {
+    // 成功した場合の処理
+    alert('Preset saved successfully!');
+  }).catch(error => {
+    // エラー処理
+    console.error('Error saving preset', error);
+    alert('Failed to save preset.');
+  });
+}
+  
+  function savePreset(presetData: Preset): Promise<void> {
+    return fetch('https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(presetData),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Preset saved successfully', data);
+    })
+    .catch(error => {
+      console.error('Error saving preset', error);
+    });
+  }
