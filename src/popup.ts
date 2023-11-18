@@ -450,7 +450,7 @@ function isGithubProfilePage(url: string) {
 }
 
 // Initialize
-window.onload = () => {
+window.addEventListener('DOMContentLoaded', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
     if (currentTab.url) {
@@ -497,7 +497,7 @@ window.onload = () => {
     loadLocalPresets();
     initializeEventListeners();
   });
-};
+});
 
 function clickPresetSaveButton() {
   const presetNameInput = document.getElementById(
