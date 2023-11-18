@@ -14,6 +14,7 @@ type Settings = {
 
 type Preset = {
   name: string;
+  shareId?: string;
   level0?: string;
   level1?: string;
   level2?: string;
@@ -211,6 +212,18 @@ function initializeEventListeners() {
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
   getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
+  const importButton = getElementById("import_preset");
+  if (importButton) {
+    importButton.addEventListener("click", () => {
+    const shareIdInput = getElementById<HTMLInputElement>("importShareId");
+    if (shareIdInput && shareIdInput.value) {
+      importPreset(shareIdInput.value);
+    } else {
+      alert("Please enter a Share ID.");
+    }
+
+    });
+  }
 }
 
 // Load and Save Functions
@@ -481,18 +494,26 @@ window.onload = () => {
     });
     loadSettings();
     loadPresets();
+    loadLocalPresets();
     initializeEventListeners();
   });
 };
 
 function clickPresetSaveButton() {
-  const shareIdInput = document.getElementById('presetShareId') as HTMLInputElement;
-  if (!shareIdInput.value) {
-    alert('Please enter a Share ID.');
+  const presetNameInput = document.getElementById(
+"presetName"
+  ) as HTMLInputElement;
+  const shareIdInput = document.getElementById(
+    "presetShareId"
+  ) as HTMLInputElement;
+
+  if (!presetNameInput.value || !shareIdInput.value) {
+    alert("Please enter both a Preset Name and Share ID.");
     return;
   }
+
   const myPreset: PresetData = {
-    name: 'My Preset',
+    name: presetNameInput.value,
     shareId: shareIdInput.value,
   };
 
@@ -500,8 +521,7 @@ function clickPresetSaveButton() {
     const levelKey = `level${i}`;
 
     // 色の情報を取得
-    const colorValue =
-      getElementById<HTMLInputElement>(levelKey)?.value || "";
+    const colorValue = getElementById<HTMLInputElement>(levelKey)?.value || "";
 
     // 画像の情報を取得
     const hiddenImageInputElement = getElementById<HTMLInputElement>(
@@ -517,34 +537,122 @@ function clickPresetSaveButton() {
     }
   }
 
-  savePreset(myPreset).then(() => {
-    // 成功した場合の処理
-    alert('Preset saved successfully!');
-  }).catch(error => {
-    // エラー処理
-    console.error('Error saving preset', error);
-    alert('Failed to save preset.');
-  });
+  savePreset(myPreset)
+    .then(() => {
+      // 成功した場合の処理
+      alert("Preset saved successfully!");
+    })
+    .catch((error) => {
+      // エラー処理
+      console.error("Error saving preset", error);
+      alert("Failed to save preset.");
+    });
 }
   
-  function savePreset(presetData: Preset): Promise<void> {
-    return fetch('https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset', {
-      method: 'POST',
+function savePreset(presetData: Preset): Promise<void> {
+  return fetch(
+    "https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset",
+    {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(presetData),
-    })
-    .then(response => {
+    }
+  )
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
-    .then(data => {
-      console.log('Preset saved successfully', data);
+    .then((data) => {
+      console.log("Preset saved successfully", data);
+
+      // プリセットをローカルストレージに保存
+      savePresetToLocal(presetData);
     })
-    .catch(error => {
-      console.error('Error saving preset', error);
+    .catch((error) => {
+      console.error("Error saving preset", error);
     });
+}
+
+function savePresetToLocal(preset: Preset) {
+  chrome.storage.local.get("presets", (result) => {
+    let presets = result.presets || [];
+    presets.push(preset);
+    chrome.storage.local.set({ presets }, () => {
+      // ドロップダウンリストに新しいプリセットを追加
+      addPresetToDropdown(preset);
+    });
+  });
+}
+
+function addPresetToDropdown(preset: Preset) {
+  const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
+  const option = document.createElement("option");
+  option.value = JSON.stringify(preset);
+  option.textContent = preset.name;
+  if (dropdown) {
+    dropdown.appendChild(option);
   }
+}
+function loadLocalPresets() {
+  chrome.storage.local.get("presets", (result) => {
+    const presets = result.presets || [];
+    const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
+    presets.forEach((preset: Preset) => {
+      const option = document.createElement("option");
+      option.value = JSON.stringify(preset);
+      option.textContent = preset.name;
+      if (dropdown) {
+        dropdown.appendChild(option);
+      }
+    });
+  });
+}
+function isPresetAlreadyImported(shareId: string) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("presets", (result) => {
+      const presets = result.presets || [];
+      const alreadyImported = presets.some(
+        (preset:Preset) => preset.shareId === shareId
+      );
+      resolve(alreadyImported);
+    });
+  });
+}
+function importPreset(shareId: string) {
+  isPresetAlreadyImported(shareId).then((alreadyImported) => {
+    if (alreadyImported) {
+      alert("This preset has already been imported.");
+      return;
+    }
+
+    fetch(
+      `https://us-central1-kawaii-kusa.cloudfunctions.net/getPreset?shareId=${shareId}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((preset) => {
+        updateUI(preset);
+        savePresetToLocal(preset);
+        saveSettingsToLocal(preset);
+        alert("Preset imported successfully!");
+      })
+      .catch((error) => {
+        console.error("Error importing preset", error);
+        alert("Failed to import preset.");
+      });
+  });
+}
+
+function saveSettingsToLocal(settings: Settings) {
+  chrome.storage.local.set({ settings }, () => {
+    console.log("Settings saved locally");
+  });
+}
