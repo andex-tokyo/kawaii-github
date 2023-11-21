@@ -505,6 +505,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function clickPresetSaveButton() {
+  saveSettings()
   const shareIdInput = document.getElementById(
     "presetShareId"
   ) as HTMLInputElement;
