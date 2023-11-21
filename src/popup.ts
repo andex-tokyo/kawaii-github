@@ -500,20 +500,17 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function clickPresetSaveButton() {
-  const presetNameInput = document.getElementById(
-"presetName"
-  ) as HTMLInputElement;
   const shareIdInput = document.getElementById(
     "presetShareId"
   ) as HTMLInputElement;
 
-  if (!presetNameInput.value || !shareIdInput.value) {
-    alert("Please enter both a Preset Name and Share ID.");
+  if (!shareIdInput.value) {
+    alert("Please enter Share ID.");
     return;
   }
 
   const myPreset: PresetData = {
-    name: presetNameInput.value,
+    name: shareIdInput.value,
     shareId: shareIdInput.value,
   };
 
