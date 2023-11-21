@@ -1,126 +1,188 @@
 body {
-    background-color: #fff;
-    border: none;
+  background-color: #fff;
+  border: none;
 }
 
 :root {
-    border: none;
+  border: none;
 }
 
 .color_panel {
-    width: 300px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+  width: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
-.color_panel label{
-    margin: 2px 0;
+.color_panel label {
+  margin: 2px 0;
 }
-  
+
 .color_panel input {
-    width: 20px;
-    height: 25px;
-    padding: 0;
-    border: none;
-    background-color: transparent;
+  width: 20px;
+  height: 25px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
 }
 
 .bottom_button {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
 #save {
-    line-height: 1;
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 18px;
-    border-radius: 20px;
-    border: none;
-    width: 280px;
-    height: 40px;
-    font-weight: bold;
-    transition: 0.3s;
-    background-image: radial-gradient(circle at 100% 0%, rgba(94, 138, 243, 1) 15%, rgba(243, 61, 223, 1));
+  line-height: 1;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 18px;
+  border-radius: 20px;
+  border: none;
+  width: 280px;
+  height: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  background-image: radial-gradient(
+    circle at 100% 0%,
+    rgba(94, 138, 243, 1) 15%,
+    rgba(243, 61, 223, 1)
+  );
 }
 
 #set_default {
-    text-align: center;
-    background-color: #b6e3a8;
-    border: none;
-    width: 30%;
-    color: #15541E;
-    margin: 0 35%;
-    margin-top: 10px;
+  text-align: center;
+  background-color: #b6e3a8;
+  border: none;
+  width: 30%;
+  color: #15541e;
+  margin: 0 35%;
+  margin-top: 10px;
 }
 .color_preview {
-    width: 15px;
-    height: 15px;
-    border: 1px solid black;
-    background-size: cover;
+  width: 15px;
+  height: 15px;
+  border: 1px solid black;
+  background-size: cover;
 }
 #customDropdown div {
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #customDropdown div:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 /* オーバーレイのスタイル */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Make it Kawaii ボタンのスタイル */
 #makeItKawaiiBtn {
-    font-size: 28px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 25px;
-    padding: 15px 35px;
-    color: white;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.4);
-    background-image: radial-gradient(circle at 100% 0%, rgba(184, 94, 243, 1) 15%, rgba(255, 161, 245, 1));
-    cursor: pointer;
+  font-size: 28px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 35px;
+  color: white;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.4);
+  background-image: radial-gradient(
+    circle at 100% 0%,
+    rgba(184, 94, 243, 1) 15%,
+    rgba(255, 161, 245, 1)
+  );
+  cursor: pointer;
 }
 
 /* Skip ボタンのスタイル */
 #skipBtn {
-    opacity: 0.7;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 16px;
-    color: #000;
-    border-bottom: 1px dashed #b0b0b0;
-    margin-top: 10px;
-    transition: opacity 0.2s;
+  opacity: 0.7;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: #000;
+  border-bottom: 1px dashed #b0b0b0;
+  margin-top: 10px;
+  transition: opacity 0.2s;
 }
 
 #skipBtn:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 #presetDropdown {
-    background-color: #fff;
-    padding: 5px 10px;
-    width: 90%;
-    margin: 0 15px;
-    margin-top: 20px;
-    border-radius: 20px;
+  background-color: #fff;
+  padding: 5px 10px;
+  width: 90%;
+  margin: 0 15px;
+  margin-top: 20px;
+  border-radius: 20px;
+}
+
+#importShareId {
+  background-color: #fff;
+  padding: 5px 10px;
+  margin: 0 15px;
+  border-radius: 20px;
+  border: 2px solid #b0b0b0;
+}
+
+#import_preset {
+  background-image: radial-gradient(
+    circle at 100% 0%,
+    rgb(244, 183, 51) 15%,
+    rgb(250, 94, 92)
+  );
+  padding: 5px 20px;
+  border-radius: 20px;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+}
+
+#presetShareId {
+  background-color: #fff;
+  padding: 5px 10px;
+  width: 80%;
+  margin: 0 15px;
+  margin-top: 20px;
+  border-radius: 20px;
+  border: 2px solid #b0b0b0;
+}
+
+#save_preset {
+  text-decoration: none;
+  color: #ffffff;
+  border-radius: 20px;
+  border: none;
+  width: 265px;
+  font-weight: bold;
+  transition: 0.3s;
+  background-image: radial-gradient(
+    circle at 100% 0%,
+    rgb(94, 193, 243) 15%,
+    rgb(100, 210, 106)
+  );
+  padding: 5px 20px;
+}
+
+.bottom_save {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 5px;
+  margin-bottom: 20px;
 }

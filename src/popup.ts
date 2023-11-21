@@ -14,6 +14,7 @@ type Settings = {
 
 type Preset = {
   name: string;
+  shareId?: string;
   level0?: string;
   level1?: string;
   level2?: string;
@@ -24,6 +25,12 @@ type Preset = {
   level2_img?: string;
   level3_img?: string;
   level4_img?: string;
+};
+
+type PresetData = { 
+    name: string;
+    shareId: string;
+    [key: string]: string | undefined;
 };
 
 let currentLevel = "";
@@ -204,15 +211,33 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
+  getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
+  const importButton = getElementById("import_preset");
+  if (importButton) {
+    importButton.addEventListener("click", () => {
+    const shareIdInput = getElementById<HTMLInputElement>("importShareId");
+    if (shareIdInput && shareIdInput.value) {
+      importPreset(shareIdInput.value);
+    } else {
+      alert("Please enter a Share ID.");
+    }
+
+    });
+  }
 }
 
 // Load and Save Functions
-function loadSettings() {
-  chrome.storage.local.get("settings", (result) => {
-    const settings = result.settings;
-
-    if (!settings) fetchDefaultSettingsAndUpdateUI();
-    else updateUI(settings);
+function loadSettings(): Promise<Settings> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("settings", (result) => {
+      const settings = result.settings;
+      if (settings) {
+        updateUI(settings);
+        resolve(settings);
+      } else {
+        fetchDefaultSettingsAndUpdateUI();
+      }
+    });
   });
 }
 
@@ -320,34 +345,35 @@ function loadPresets() {
     });
 }
 
-function saveSettings() {
-  // 既存の設定を読み込む
-  chrome.storage.local.get("settings", (result) => {
-    const settings: Settings = result.settings || {};
+function saveSettings(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("settings", (result) => {
+      const settings: Settings = result.settings || {};
 
-    for (let i = 0; i <= 4; i++) {
-      const levelKey = `level${i}`;
+      for (let i = 0; i <= 4; i++) {
+        const levelKey = `level${i}`;
 
-      // 色の情報を取得
-      const colorValue =
-        getElementById<HTMLInputElement>(levelKey)?.value || "";
+        // 色の情報を取得
+        const colorValue =
+          getElementById<HTMLInputElement>(levelKey)?.value || "";
 
-      // 画像の情報を取得
-      const hiddenImageInputElement = getElementById<HTMLInputElement>(
-        `${levelKey}_img_hidden`
-      );
+        // 画像の情報を取得
+        const hiddenImageInputElement = getElementById<HTMLInputElement>(
+          `${levelKey}_img_hidden`
+        );
 
-      // 画像が選択されているか確認
-      if (hiddenImageInputElement && hiddenImageInputElement.value) {
-        settings[`${levelKey}_img`] = hiddenImageInputElement.value;
-      } else {
-        settings[`${levelKey}_img`] = undefined;
-        settings[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
+        // 画像が選択されているか確認
+        if (hiddenImageInputElement && hiddenImageInputElement.value) {
+          settings[`${levelKey}_img`] = hiddenImageInputElement.value;
+        } else {
+          settings[`${levelKey}_img`] = undefined;
+          settings[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
+        }
       }
-    }
-    // 新しい設定を保存する
-    chrome.storage.local.set({ settings }, () => {
-      loadSettings();
+      // 新しい設定を保存する
+      chrome.storage.local.set({ settings }, () => {
+        resolve();
+      });
     });
   });
 }
@@ -430,7 +456,7 @@ function isGithubProfilePage(url: string) {
 }
 
 // Initialize
-window.onload = () => {
+window.addEventListener('DOMContentLoaded', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
     if (currentTab.url) {
@@ -474,6 +500,156 @@ window.onload = () => {
     });
     loadSettings();
     loadPresets();
+    loadLocalPresets();
     initializeEventListeners();
   });
-};
+});
+
+function clickPresetSaveButton() {
+  saveSettings()
+  const shareIdInput = document.getElementById(
+    "presetShareId"
+  ) as HTMLInputElement;
+
+  if (!shareIdInput.value) {
+    alert("Please enter Share ID.");
+    return;
+  }
+  saveSettings()
+    .then(() => {
+      // 保存が完了した後にプリセットを保存
+      loadSettings()
+        .then((settings) => {
+          const myPreset: PresetData = {
+            ...settings,
+            name: shareIdInput.value,
+            shareId: shareIdInput.value,
+          };
+
+          savePreset(myPreset)
+            .then(() => {
+              alert("Preset saved successfully!");
+            })
+            .catch((error) => {
+              console.error("Error saving preset", error);
+              alert("Failed to save preset.");
+            });
+        })
+        .catch((error) => {
+          console.error("Error loading settings", error);
+          alert("Failed to load settings.");
+        });
+    })
+    .catch((error) => {
+      console.error("Error saving settings", error);
+      alert("Failed to save settings.");
+    });
+}
+  
+function savePreset(presetData: Preset): Promise<void> {
+  return fetch(
+    "https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(presetData),
+    }
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Preset saved successfully", data);
+
+      // プリセットをローカルストレージに保存
+      savePresetToLocal(presetData);
+    })
+    .catch((error) => {
+      console.error("Error saving preset", error);
+    });
+}
+
+function savePresetToLocal(preset: Preset) {
+  chrome.storage.local.get("presets", (result) => {
+    let presets = result.presets || [];
+    presets.push(preset);
+    chrome.storage.local.set({ presets }, () => {
+      // ドロップダウンリストに新しいプリセットを追加
+      addPresetToDropdown(preset);
+    });
+  });
+}
+
+function addPresetToDropdown(preset: Preset) {
+  const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
+  const option = document.createElement("option");
+  option.value = JSON.stringify(preset);
+  option.textContent = preset.name;
+  if (dropdown) {
+    dropdown.appendChild(option);
+  }
+}
+function loadLocalPresets() {
+  chrome.storage.local.get("presets", (result) => {
+    const presets = result.presets || [];
+    const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
+    presets.forEach((preset: Preset) => {
+      const option = document.createElement("option");
+      option.value = JSON.stringify(preset);
+      option.textContent = preset.name;
+      if (dropdown) {
+        dropdown.appendChild(option);
+      }
+    });
+  });
+}
+function isPresetAlreadyImported(shareId: string) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("presets", (result) => {
+      const presets = result.presets || [];
+      const alreadyImported = presets.some(
+        (preset:Preset) => preset.shareId === shareId
+      );
+      resolve(alreadyImported);
+    });
+  });
+}
+function importPreset(shareId: string) {
+  isPresetAlreadyImported(shareId).then((alreadyImported) => {
+    if (alreadyImported) {
+      alert("This preset has already been imported.");
+      return;
+    }
+
+    fetch(
+      `https://us-central1-kawaii-kusa.cloudfunctions.net/getPreset?shareId=${shareId}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((preset) => {
+        updateUI(preset);
+        savePresetToLocal(preset);
+        saveSettingsToLocal(preset);
+        alert("Preset imported successfully!");
+      })
+      .catch((error) => {
+        console.error("Error importing preset", error);
+        alert("Failed to import preset.");
+      });
+  });
+}
+
+function saveSettingsToLocal(settings: Settings) {
+  chrome.storage.local.set({ settings }, () => {
+    console.log("Settings saved locally");
+  });
+}
