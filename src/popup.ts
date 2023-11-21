@@ -345,34 +345,35 @@ function loadPresets() {
     });
 }
 
-function saveSettings() {
-  // 既存の設定を読み込む
-  chrome.storage.local.get("settings", (result) => {
-    const settings: Settings = result.settings || {};
+function saveSettings(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("settings", (result) => {
+      const settings: Settings = result.settings || {};
 
-    for (let i = 0; i <= 4; i++) {
-      const levelKey = `level${i}`;
+      for (let i = 0; i <= 4; i++) {
+        const levelKey = `level${i}`;
 
-      // 色の情報を取得
-      const colorValue =
-        getElementById<HTMLInputElement>(levelKey)?.value || "";
+        // 色の情報を取得
+        const colorValue =
+          getElementById<HTMLInputElement>(levelKey)?.value || "";
 
-      // 画像の情報を取得
-      const hiddenImageInputElement = getElementById<HTMLInputElement>(
-        `${levelKey}_img_hidden`
-      );
+        // 画像の情報を取得
+        const hiddenImageInputElement = getElementById<HTMLInputElement>(
+          `${levelKey}_img_hidden`
+        );
 
-      // 画像が選択されているか確認
-      if (hiddenImageInputElement && hiddenImageInputElement.value) {
-        settings[`${levelKey}_img`] = hiddenImageInputElement.value;
-      } else {
-        settings[`${levelKey}_img`] = undefined;
-        settings[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
+        // 画像が選択されているか確認
+        if (hiddenImageInputElement && hiddenImageInputElement.value) {
+          settings[`${levelKey}_img`] = hiddenImageInputElement.value;
+        } else {
+          settings[`${levelKey}_img`] = undefined;
+          settings[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
+        }
       }
-    }
-    // 新しい設定を保存する
-    chrome.storage.local.set({ settings }, () => {
-      loadSettings();
+      // 新しい設定を保存する
+      chrome.storage.local.set({ settings }, () => {
+        resolve();
+      });
     });
   });
 }
@@ -514,30 +515,34 @@ function clickPresetSaveButton() {
     alert("Please enter Share ID.");
     return;
   }
+  saveSettings()
+    .then(() => {
+      // 保存が完了した後にプリセットを保存
+      loadSettings()
+        .then((settings) => {
+          const myPreset: PresetData = {
+            ...settings,
+            name: shareIdInput.value,
+            shareId: shareIdInput.value,
+          };
 
-  // 最新の設定をロード
-  loadSettings()
-    .then((settings) => {
-      // プリセット情報を作成
-      const myPreset: PresetData = {
-        ...settings, // loadSettings から取得した設定を使用
-        name: shareIdInput.value,
-        shareId: shareIdInput.value,
-      };
-
-      // プリセットを保存
-      savePreset(myPreset)
-        .then(() => {
-          alert("Preset saved successfully!");
+          savePreset(myPreset)
+            .then(() => {
+              alert("Preset saved successfully!");
+            })
+            .catch((error) => {
+              console.error("Error saving preset", error);
+              alert("Failed to save preset.");
+            });
         })
         .catch((error) => {
-          console.error("Error saving preset", error);
-          alert("Failed to save preset.");
+          console.error("Error loading settings", error);
+          alert("Failed to load settings.");
         });
     })
     .catch((error) => {
-      console.error("Error loading settings", error);
-      alert("Failed to load settings.");
+      console.error("Error saving settings", error);
+      alert("Failed to save settings.");
     });
 }
   
