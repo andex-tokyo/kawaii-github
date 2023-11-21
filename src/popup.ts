@@ -227,12 +227,17 @@ function initializeEventListeners() {
 }
 
 // Load and Save Functions
-function loadSettings() {
-  chrome.storage.local.get("settings", (result) => {
-    const settings = result.settings;
-
-    if (!settings) fetchDefaultSettingsAndUpdateUI();
-    else updateUI(settings);
+function loadSettings(): Promise<Settings> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("settings", (result) => {
+      const settings = result.settings;
+      if (settings) {
+        updateUI(settings);
+        resolve(settings);
+      } else {
+        fetchDefaultSettingsAndUpdateUI();
+      }
+    });
   });
 }
 
@@ -509,40 +514,29 @@ function clickPresetSaveButton() {
     return;
   }
 
-  const myPreset: PresetData = {
-    name: shareIdInput.value,
-    shareId: shareIdInput.value,
-  };
+  // 最新の設定をロード
+  loadSettings()
+    .then((settings) => {
+      // プリセット情報を作成
+      const myPreset: PresetData = {
+        ...settings, // loadSettings から取得した設定を使用
+        name: shareIdInput.value,
+        shareId: shareIdInput.value,
+      };
 
-  for (let i = 0; i <= 4; i++) {
-    const levelKey = `level${i}`;
-
-    // 色の情報を取得
-    const colorValue = getElementById<HTMLInputElement>(levelKey)?.value || "";
-
-    // 画像の情報を取得
-    const hiddenImageInputElement = getElementById<HTMLInputElement>(
-      `${levelKey}_img_hidden`
-    );
-
-    // 画像が選択されているか確認
-    if (hiddenImageInputElement && hiddenImageInputElement.value) {
-      myPreset[`${levelKey}_img`] = hiddenImageInputElement.value;
-    } else {
-      myPreset[`${levelKey}_img`] = undefined;
-      myPreset[levelKey] = colorValue; // 画像が選択されていない場合のみ、色の情報を保存
-    }
-  }
-
-  savePreset(myPreset)
-    .then(() => {
-      // 成功した場合の処理
-      alert("Preset saved successfully!");
+      // プリセットを保存
+      savePreset(myPreset)
+        .then(() => {
+          alert("Preset saved successfully!");
+        })
+        .catch((error) => {
+          console.error("Error saving preset", error);
+          alert("Failed to save preset.");
+        });
     })
     .catch((error) => {
-      // エラー処理
-      console.error("Error saving preset", error);
-      alert("Failed to save preset.");
+      console.error("Error loading settings", error);
+      alert("Failed to load settings.");
     });
 }
   
