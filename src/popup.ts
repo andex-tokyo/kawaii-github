@@ -505,16 +505,12 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function clickPresetSaveButton() {
-  // プリセットの名前と共有IDを取得
-  const presetNameInput = document.getElementById(
-    "presetName"
-  ) as HTMLInputElement;
   const shareIdInput = document.getElementById(
     "presetShareId"
   ) as HTMLInputElement;
 
-  if (!presetNameInput.value || !shareIdInput.value) {
-    alert("Please enter both a Preset Name and Share ID.");
+  if (!shareIdInput.value) {
+    alert("Please enter Share ID.");
     return;
   }
 
@@ -524,7 +520,7 @@ function clickPresetSaveButton() {
       // プリセット情報を作成
       const myPreset: PresetData = {
         ...settings, // loadSettings から取得した設定を使用
-        name: presetNameInput.value,
+        name: shareIdInput.value,
         shareId: shareIdInput.value,
       };
 
