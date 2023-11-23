@@ -566,6 +566,7 @@ function exportPreset(presetData: Preset): Promise<void> {
       console.log("Preset saved successfully", presetData);
       savePresetToLocal(presetData);
       savePresetSettings(presetData);
+      closePopup()
     })
     .catch((error) => {
       console.error("Error saving preset", error);
@@ -659,6 +660,7 @@ function importPreset(shareId: string) {
         updateUI(preset);
         savePresetToLocal(preset);
         savePresetSettings(preset);
+        closePopup()
         alert("Preset imported successfully!");
       })
       .catch((error) => {
@@ -677,13 +679,31 @@ function saveSettingsToLocal(settings: Settings) {
 function showPopup(type: "import" | "export"): void {
   const popup = document.createElement("div");
   popup.id = "popup";
-  popup.innerHTML = `
+  if (type === 'import') {
+    popup.innerHTML = `
     <div id="popupContent">
-      <input type="text" id="shareIdInput" placeholder="Share ID">
-      <button id="confirmButton">確認</button>
-      <button id="cancelButton">キャンセル</button>
+      <div class="bottom_button">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+      </div>
+      <div class="bottom_save">
+        <button id="cancelButton">キャンセル</button>
+        <button id="confirmButton">インポート</button>
+      </div>
     </div>
   `;
+  } else if (type === 'export') {
+    popup.innerHTML = `
+    <div id="popupContent">
+      <div class="bottom_button">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+      </div>
+      <div class="bottom_save">
+        <button id="cancelButton">キャンセル</button>
+        <button id="confirmButton">エクスポート</button>
+      </div>
+    </div>
+  `;
+  }
   document.body.appendChild(popup);
 
   // ボタンにイベントリスナーを動的に追加
