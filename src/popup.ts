@@ -211,7 +211,7 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
-getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
+getElementById("save_preset")?.addEventListener("click", clickPresetExportButton);
 // const importButton = getElementById("import_preset");
 // if (importButton) {
 //     importButton.addEventListener("click", () => {
@@ -512,8 +512,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function clickPresetSaveButton() {
-  saveSettings()
+function clickPresetExportButton() {
   const shareIdInput = document.getElementById(
     "shareIdInput"
   ) as HTMLInputElement;
@@ -571,9 +570,7 @@ function savePreset(presetData: Preset): Promise<void> {
       return response.json();
     })
     .then((data) => {
-      console.log("Preset saved successfully", data);
-
-      // プリセットをローカルストレージに保存
+      console.log("Preset saved successfully", presetData);
       savePresetToLocal(presetData);
     })
     .catch((error) => {
@@ -645,7 +642,6 @@ function importPreset(shareId: string) {
       .then((preset) => {
         updateUI(preset);
         savePresetToLocal(preset);
-        saveSettingsToLocal(preset);
         alert("Preset imported successfully!");
       })
       .catch((error) => {
@@ -661,28 +657,26 @@ function saveSettingsToLocal(settings: Settings) {
   });
 }
 
-function showPopup(type: string) {
-    const popup = document.createElement('div');
-    popup.id = 'popup';
-    if (type === 'import') {
-    popup.innerHTML = `
-      <div id="popupContent">
-        <input type="text" id="shareIdInput" placeholder="Share ID">
-        <button onclick="processPreset('${type}')">プリセットを読み込む</button>
-        <button onclick="closePopup()">キャンセル</button>
-      </div>
-    `;
-    } else if (type === 'export') {
-    popup.innerHTML = `
+function showPopup(type: "import" | "export"): void {
+  const popup = document.createElement("div");
+  popup.id = "popup";
+  popup.innerHTML = `
     <div id="popupContent">
-        <input type="text" id="shareIdInput" placeholder="Share ID">
-        <button onclick="processPreset('${type}')">プリセットを保存&共有</button>
-        <button onclick="closePopup()">キャンセル</button>
+      <input type="text" id="shareIdInput" placeholder="Share ID">
+      <button id="confirmButton">確認</button>
+      <button id="cancelButton">キャンセル</button>
     </div>
-    `;
-    }
-    document.body.appendChild(popup);
-  }
+  `;
+  document.body.appendChild(popup);
+
+  // ボタンにイベントリスナーを動的に追加
+  document
+    .getElementById("confirmButton")
+    ?.addEventListener("click", () => processPreset(type));
+  document
+    .getElementById("cancelButton")
+    ?.addEventListener("click", closePopup);
+}
   
 function processPreset(type: string) {
     const shareIdInput = document.getElementById('shareIdInput') as HTMLInputElement;
@@ -691,7 +685,7 @@ function processPreset(type: string) {
         importPreset(shareId);
     } else if (type === 'export') {
         // Call the appropriate function here
-        clickPresetSaveButton()
+        clickPresetExportButton()
     }
 }
 
