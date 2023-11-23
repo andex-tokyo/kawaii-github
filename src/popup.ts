@@ -532,7 +532,7 @@ function clickPresetExportButton() {
             shareId: shareIdInput.value,
           };
 
-          savePreset(myPreset)
+          exportPreset(myPreset)
             .then(() => {
               alert("Preset saved successfully!");
             })
@@ -552,7 +552,7 @@ function clickPresetExportButton() {
     });
 }
   
-function savePreset(presetData: Preset): Promise<void> {
+function exportPreset(presetData: Preset): Promise<void> {
   return fetch(
     "https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset",
     {
