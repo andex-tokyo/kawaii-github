@@ -211,19 +211,26 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
-  getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
-  const importButton = getElementById("import_preset");
-  if (importButton) {
-    importButton.addEventListener("click", () => {
-    const shareIdInput = getElementById<HTMLInputElement>("importShareId");
-    if (shareIdInput && shareIdInput.value) {
-      importPreset(shareIdInput.value);
-    } else {
-      alert("Please enter a Share ID.");
-    }
-
-    });
-  }
+getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
+// const importButton = getElementById("import_preset");
+// if (importButton) {
+//     importButton.addEventListener("click", () => {
+//         const shareIdInput = getElementById<HTMLInputElement>("importShareId");
+//         if (shareIdInput && shareIdInput.value) {
+//             importPreset(shareIdInput.value);
+//         } else {
+//             alert("Please enter a Share ID.");
+//         }
+//     });
+}
+const importPresetButton = getElementById('importPresetButton');
+if (importPresetButton) {
+    console.log('import')
+    importPresetButton.addEventListener('click', () => showPopup('import'));
+}
+const exportPresetButton = getElementById('exportPresetButton');
+if (exportPresetButton) {
+    exportPresetButton.addEventListener('click', () => showPopup('export'));
 }
 
 // Load and Save Functions
@@ -508,7 +515,7 @@ window.addEventListener('DOMContentLoaded', () => {
 function clickPresetSaveButton() {
   saveSettings()
   const shareIdInput = document.getElementById(
-    "presetShareId"
+    "shareIdInput"
   ) as HTMLInputElement;
 
   if (!shareIdInput.value) {
@@ -652,4 +659,46 @@ function saveSettingsToLocal(settings: Settings) {
   chrome.storage.local.set({ settings }, () => {
     console.log("Settings saved locally");
   });
+}
+
+function showPopup(type: string) {
+    const popup = document.createElement('div');
+    popup.id = 'popup';
+    if (type === 'import') {
+    popup.innerHTML = `
+      <div id="popupContent">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+        <button onclick="processPreset('${type}')">プリセットを読み込む</button>
+        <button onclick="closePopup()">キャンセル</button>
+      </div>
+    `;
+    } else if (type === 'export') {
+    popup.innerHTML = `
+    <div id="popupContent">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+        <button onclick="processPreset('${type}')">プリセットを保存&共有</button>
+        <button onclick="closePopup()">キャンセル</button>
+    </div>
+    `;
+    }
+    document.body.appendChild(popup);
+  }
+  
+function processPreset(type: string) {
+    const shareIdInput = document.getElementById('shareIdInput') as HTMLInputElement;
+    const shareId = shareIdInput?.value;
+    if (type === 'import') {
+        importPreset(shareId);
+    } else if (type === 'export') {
+        // Call the appropriate function here
+        clickPresetSaveButton()
+    }
+}
+
+// ポップアップを閉じる関数
+function closePopup() {
+    const popup = document.getElementById('popup');
+    if (popup) {
+        document.body.removeChild(popup);
+    }
 }
