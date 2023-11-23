@@ -521,8 +521,6 @@ function clickPresetExportButton() {
     alert("Please enter Share ID.");
     return;
   }
-  saveSettings()
-    .then(() => {
       // 保存が完了した後にプリセットを保存
       loadSettings()
         .then((settings) => {
@@ -545,11 +543,6 @@ function clickPresetExportButton() {
           console.error("Error loading settings", error);
           alert("Failed to load settings.");
         });
-    })
-    .catch((error) => {
-      console.error("Error saving settings", error);
-      alert("Failed to save settings.");
-    });
 }
   
 function exportPreset(presetData: Preset): Promise<void> {
@@ -572,32 +565,55 @@ function exportPreset(presetData: Preset): Promise<void> {
     .then((data) => {
       console.log("Preset saved successfully", presetData);
       savePresetToLocal(presetData);
+      savePresetSettings(presetData);
     })
     .catch((error) => {
       console.error("Error saving preset", error);
     });
-}
+}function savePresetSettings(preset: Preset): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const settings: Settings = {
+      level0: preset.level0,
+      level1: preset.level1,
+      level2: preset.level2,
+      level3: preset.level3,
+      level4: preset.level4,
+      level0_img: preset.level0_img,
+      level1_img: preset.level1_img,
+      level2_img: preset.level2_img,
+      level3_img: preset.level3_img,
+      level4_img: preset.level4_img,
+    };
 
+    chrome.storage.local.set({ settings }, () => {
+      resolve();
+    });
+  });
+}
 function savePresetToLocal(preset: Preset) {
   chrome.storage.local.get("presets", (result) => {
     let presets = result.presets || [];
     presets.push(preset);
     chrome.storage.local.set({ presets }, () => {
-      // ドロップダウンリストに新しいプリセットを追加
-      addPresetToDropdown(preset);
+      addPresetToDropdown(preset, true); // プリセットをドロップダウンに追加し、選択状態にする
     });
   });
 }
 
-function addPresetToDropdown(preset: Preset) {
+function addPresetToDropdown(preset: Preset, select: boolean = false) {
   const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
   const option = document.createElement("option");
   option.value = JSON.stringify(preset);
   option.textContent = preset.name;
   if (dropdown) {
     dropdown.appendChild(option);
+    if (select) {
+      dropdown.value = JSON.stringify(preset); // 新しいプリセットを選択
+      updateUI(preset); // UIを更新
+    }
   }
 }
+
 function loadLocalPresets() {
   chrome.storage.local.get("presets", (result) => {
     const presets = result.presets || [];
@@ -642,6 +658,7 @@ function importPreset(shareId: string) {
       .then((preset) => {
         updateUI(preset);
         savePresetToLocal(preset);
+        savePresetSettings(preset);
         alert("Preset imported successfully!");
       })
       .catch((error) => {
