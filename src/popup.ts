@@ -211,19 +211,16 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
-  getElementById("save_preset")?.addEventListener("click", clickPresetSaveButton);
-  const importButton = getElementById("import_preset");
-  if (importButton) {
-    importButton.addEventListener("click", () => {
-    const shareIdInput = getElementById<HTMLInputElement>("importShareId");
-    if (shareIdInput && shareIdInput.value) {
-      importPreset(shareIdInput.value);
-    } else {
-      alert("Please enter a Share ID.");
-    }
-
-    });
-  }
+  getElementById("save_preset")?.addEventListener("click", clickPresetExportButton);
+}
+const importPresetButton = getElementById('importPresetButton');
+if (importPresetButton) {
+    console.log('import')
+    importPresetButton.addEventListener('click', () => showPopup('import'));
+}
+const exportPresetButton = getElementById('exportPresetButton');
+if (exportPresetButton) {
+    exportPresetButton.addEventListener('click', () => showPopup('export'));
 }
 
 // Load and Save Functions
@@ -505,18 +502,15 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function clickPresetSaveButton() {
-  saveSettings()
+function clickPresetExportButton() {
   const shareIdInput = document.getElementById(
-    "presetShareId"
+    "shareIdInput"
   ) as HTMLInputElement;
 
   if (!shareIdInput.value) {
     alert("Please enter Share ID.");
     return;
   }
-  saveSettings()
-    .then(() => {
       // 保存が完了した後にプリセットを保存
       loadSettings()
         .then((settings) => {
@@ -526,7 +520,7 @@ function clickPresetSaveButton() {
             shareId: shareIdInput.value,
           };
 
-          savePreset(myPreset)
+          exportPreset(myPreset)
             .then(() => {
               alert("Preset saved successfully!");
             })
@@ -539,14 +533,9 @@ function clickPresetSaveButton() {
           console.error("Error loading settings", error);
           alert("Failed to load settings.");
         });
-    })
-    .catch((error) => {
-      console.error("Error saving settings", error);
-      alert("Failed to save settings.");
-    });
 }
   
-function savePreset(presetData: Preset): Promise<void> {
+function exportPreset(presetData: Preset): Promise<void> {
   return fetch(
     "https://us-central1-kawaii-kusa.cloudfunctions.net/savePreset",
     {
@@ -564,36 +553,58 @@ function savePreset(presetData: Preset): Promise<void> {
       return response.json();
     })
     .then((data) => {
-      console.log("Preset saved successfully", data);
-
-      // プリセットをローカルストレージに保存
+      console.log("Preset saved successfully", presetData);
       savePresetToLocal(presetData);
+      savePresetSettings(presetData);
+      closePopup()
     })
     .catch((error) => {
       console.error("Error saving preset", error);
     });
-}
+}function savePresetSettings(preset: Preset): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const settings: Settings = {
+      level0: preset.level0,
+      level1: preset.level1,
+      level2: preset.level2,
+      level3: preset.level3,
+      level4: preset.level4,
+      level0_img: preset.level0_img,
+      level1_img: preset.level1_img,
+      level2_img: preset.level2_img,
+      level3_img: preset.level3_img,
+      level4_img: preset.level4_img,
+    };
 
+    chrome.storage.local.set({ settings }, () => {
+      resolve();
+    });
+  });
+}
 function savePresetToLocal(preset: Preset) {
   chrome.storage.local.get("presets", (result) => {
     let presets = result.presets || [];
     presets.push(preset);
     chrome.storage.local.set({ presets }, () => {
-      // ドロップダウンリストに新しいプリセットを追加
-      addPresetToDropdown(preset);
+      addPresetToDropdown(preset, true); // プリセットをドロップダウンに追加し、選択状態にする
     });
   });
 }
 
-function addPresetToDropdown(preset: Preset) {
+function addPresetToDropdown(preset: Preset, select: boolean = false) {
   const dropdown = getElementById<HTMLSelectElement>("presetDropdown");
   const option = document.createElement("option");
   option.value = JSON.stringify(preset);
   option.textContent = preset.name;
   if (dropdown) {
     dropdown.appendChild(option);
+    if (select) {
+      dropdown.value = JSON.stringify(preset); // 新しいプリセットを選択
+      updateUI(preset); // UIを更新
+    }
   }
 }
+
 function loadLocalPresets() {
   chrome.storage.local.get("presets", (result) => {
     const presets = result.presets || [];
@@ -638,7 +649,8 @@ function importPreset(shareId: string) {
       .then((preset) => {
         updateUI(preset);
         savePresetToLocal(preset);
-        saveSettingsToLocal(preset);
+        savePresetSettings(preset);
+        closePopup()
         alert("Preset imported successfully!");
       })
       .catch((error) => {
@@ -652,4 +664,62 @@ function saveSettingsToLocal(settings: Settings) {
   chrome.storage.local.set({ settings }, () => {
     console.log("Settings saved locally");
   });
+}
+
+function showPopup(type: "import" | "export"): void {
+  const popup = document.createElement("div");
+  popup.id = "popup";
+  if (type === 'import') {
+    popup.innerHTML = `
+    <div id="popupContent">
+      <div class="bottom_button">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+      </div>
+      <div class="bottom_save">
+        <button id="cancelButton">キャンセル</button>
+        <button id="confirmButton">インポート</button>
+      </div>
+    </div>
+  `;
+  } else if (type === 'export') {
+    popup.innerHTML = `
+    <div id="popupContent">
+      <div class="bottom_button">
+        <input type="text" id="shareIdInput" placeholder="Share ID">
+      </div>
+      <div class="bottom_save">
+        <button id="cancelButton">キャンセル</button>
+        <button id="confirmButton">エクスポート</button>
+      </div>
+    </div>
+  `;
+  }
+  document.body.appendChild(popup);
+
+  // ボタンにイベントリスナーを動的に追加
+  document
+    .getElementById("confirmButton")
+    ?.addEventListener("click", () => processPreset(type));
+  document
+    .getElementById("cancelButton")
+    ?.addEventListener("click", closePopup);
+}
+  
+function processPreset(type: string) {
+    const shareIdInput = document.getElementById('shareIdInput') as HTMLInputElement;
+    const shareId = shareIdInput?.value;
+    if (type === 'import') {
+        importPreset(shareId);
+    } else if (type === 'export') {
+        // Call the appropriate function here
+        clickPresetExportButton()
+    }
+}
+
+// ポップアップを閉じる関数
+function closePopup() {
+    const popup = document.getElementById('popup');
+    if (popup) {
+        document.body.removeChild(popup);
+    }
 }

@@ -141,7 +141,7 @@ body {
   border: 2px solid #b0b0b0;
 }
 
-#import_preset {
+#importPresetButton {
   background-image: radial-gradient(
     circle at 100% 0%,
     rgb(244, 183, 51) 15%,
@@ -152,24 +152,24 @@ body {
   border: none;
   color: #fff;
   font-weight: bold;
+  width: 130px;
 }
 
-#presetShareId {
+#shareIdInput {
   background-color: #fff;
   padding: 5px 10px;
-  width: 80%;
-  margin: 0 15px;
+  width: 90%;
   margin-top: 20px;
   border-radius: 20px;
   border: 2px solid #b0b0b0;
 }
 
-#save_preset {
+#exportPresetButton {
   text-decoration: none;
   color: #ffffff;
   border-radius: 20px;
   border: none;
-  width: 265px;
+  width: 130px;
   font-weight: bold;
   transition: 0.3s;
   background-image: radial-gradient(
@@ -185,4 +185,40 @@ body {
   justify-content: space-around;
   margin-top: 5px;
   margin-bottom: 20px;
+}
+
+#popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#popupContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+#cancelButton {
+  background-color: #fff;
+  border: 1px solid #b0b0b0;
+  border-radius: 20px;
+  padding: 5px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#confirmButton {
+  background-color: cornflowerblue;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 20px;
+  color: #fff;
+  cursor: pointer;
 }

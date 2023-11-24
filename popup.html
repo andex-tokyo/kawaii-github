@@ -56,23 +56,14 @@
     <option value="">プリセットを選択</option>
     <!-- ここにプリセットのオプションが動的に追加される -->
 </select>
-
-<div class="preset_import_container">
-    <input type="text" id="importShareId" placeholder="プリセットIDを入力">
-    <button id="import_preset">読み込む</button>
-</div>
+    <div class="bottom_save">
+        <button id="importPresetButton">インポート</button>
+        <button id="exportPresetButton">エクスポート</button>
+    </div>
 
     <div class="bottom_button">
         <button id="save">Save</button>
     </div>
-
-
-<div class="preset_save_container">
-    <input type="text" id="presetShareId" placeholder="共有するためのIDを入力">
-    <div class="bottom_save">
-        <button id="save_preset">プリセットを保存&共有</button>
-    </div>
-</div>
 
     <div id="customDropdown" style="display:none; position:absolute; background-color:#fff; border:1px solid #ccc; z-index:100;">
         <div id="colorChoice">色を選択</div>
