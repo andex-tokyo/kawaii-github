@@ -211,17 +211,7 @@ function initializeEventListeners() {
   );
   getElementById("save")?.addEventListener("click", saveSettings);
   getElementById("set_default")?.addEventListener("click", setDefaultSettings);
-getElementById("save_preset")?.addEventListener("click", clickPresetExportButton);
-// const importButton = getElementById("import_preset");
-// if (importButton) {
-//     importButton.addEventListener("click", () => {
-//         const shareIdInput = getElementById<HTMLInputElement>("importShareId");
-//         if (shareIdInput && shareIdInput.value) {
-//             importPreset(shareIdInput.value);
-//         } else {
-//             alert("Please enter a Share ID.");
-//         }
-//     });
+  getElementById("save_preset")?.addEventListener("click", clickPresetExportButton);
 }
 const importPresetButton = getElementById('importPresetButton');
 if (importPresetButton) {
